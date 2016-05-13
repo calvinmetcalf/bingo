@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux'
 import {updateValue, rerender} from '../actions';
-import { FormGroup, ControlLabel, FormControl, Col} from 'react-bootstrap';
+import { FormGroup, ControlLabel, FormControl, Col, Button} from 'react-bootstrap';
 class BingoForm extends React.Component {
   render() {
     const {dispatch, bingo} = this.props;
@@ -23,15 +23,15 @@ class BingoForm extends React.Component {
 
 <FormGroup controlId="entriesControl">
   <Col md={4} componentClass={ControlLabel}>Words (comma separated)</Col>
-  <Col md={4}>
-    <FormControl componentClass="textarea" onChange={createChange('entries')} value={bingo.get('entries')} name="entries"></FormControl>
+  <Col md={6}>
+    <FormControl componentClass="textarea"  rows="5" onChange={createChange('entries')} value={bingo.get('entries')}  name="entries"></FormControl>
   </Col>
 </FormGroup>
 
 <FormGroup controlId="InstructionsControl">
   <Col md={4} componentClass={ControlLabel}>Instructions</Col>
-  <Col md={4}>
-    <FormControl componentClass="textarea" onChange={createChange('instructions')} value={bingo.get('instructions')} name="instructions"></FormControl>
+  <Col md={6}>
+    <FormControl componentClass="textarea" onChange={createChange('instructions')} rows="5" value={bingo.get('instructions')} name="instructions"></FormControl>
   </Col>
 </FormGroup>
 <FormGroup controlId="widthControl">
@@ -59,7 +59,7 @@ class BingoForm extends React.Component {
   </Col>
 </FormGroup>
 </fieldset>
-{fullSize <= parsedList.size ? <button className="btn btn-lg btn-primary btn-block" type="submit">Generate Cards</button>: <button className="btn btn-lg btn-primary btn-block" disabled={true} type="submit">Not Enough Words choose <span>{fullSize - parsedList.size}</span> more unique words</button>}
+<Button  bsStyle="primary" bsSize="large" block className="btn btn-lg btn-primary btn-block" disabled={fullSize > parsedList.size} type="submit">{fullSize <= parsedList.size ? <span>Generate Cards</span> : <span>Not Enough Words choose <span>{fullSize - parsedList.size}</span> more unique words</span>}</Button>
 </form>;
   }
 }
