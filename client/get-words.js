@@ -1,42 +1,29 @@
-import createHash from 'create-hash';
-import chacha from 'chacha';
-export default (side, num, bingo) => {
-  var total = bingo.get('width') * bingo.get('height');
-  var arr = bingo.get('entries').split(',').map(item=>item.trim()).filter(item=>item);
-  var temp = new Set(arr);
-  arr = [...temp];
+import xorshift from 'xorshift';
+import Immutable from 'immutable';
+
+export default (side, num, width, height, words) => {
+  var total = width * height
+  var arr = [...words];
   arr.sort();
-  shuffle(arr, side, num);
-  return arr.slice(0, total);
+  return shuffle(new Immutable.List(arr), side, num, width, height);
 }
-function shuffle(arr, side, num) {
-  var seed = createHash('sha384').update(side).update(num.toString()).digest();
-  var rng = randomizer(seed);
-  var currentIndex = arr.length;
-
-  // While there remain elements to shuffle...
-  while (currentIndex) {
-
-    // Pick a remaining element...
-    let randomIndex = Math.floor(rng() * currentIndex);
-    currentIndex -= 1;
-
-    // And swap it with the current element.
-    let temporaryValue = arr[currentIndex];
-    arr[currentIndex] = arr[randomIndex];
-    arr[randomIndex] = temporaryValue;
+function shuffle(list, side, num, width, height) {
+  var seed = [num * 0x1000, side === 'right' ? 0xc000 : 0x4000, num, 0x600 * num];
+  var rng = xorshift.constructor(seed);
+  var i = 40;
+  while (--i) {
+    rng.randomint();
   }
-
-  return arr;
-}
-
-function randomizer(seed) {
-  var key = seed.slice(0, 32);
-  var iv = seed.slice(-12);
-  var cipher=chacha.createCipher(key, iv);
-  var zeros = Buffer.alloc(4);
-  return ()=>{
-    var buf = cipher.update(zeros);
-    return buf.readUInt32LE(0)/0x100000000;
+  var out = new Immutable.List();
+  var row = new Immutable.List();
+  while (out.size < height) {
+    let randomIndex = Math.floor(rng.random() * list.size);
+    row = row.push(list.get(randomIndex));
+    if (row.size === width) {
+      out = out.push(row);
+      row = new Immutable.List();
+    }
+    list = list.delete(randomIndex);
   }
+  return out;
 }

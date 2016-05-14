@@ -1,4 +1,4 @@
-import qs from 'query-string';
+import qs from 'querystring';
 import Immutable from 'immutable';
 const defaultStuff = Immutable.fromJS({
   height: '5',
@@ -26,7 +26,4 @@ export const setQuery = state=>{
     }
   }
   global.history.pushState(out, '', '?' + qs.stringify(out));
-  setTimeout(function () {
-    global.location.hash = '#forms';
-  });
 }
